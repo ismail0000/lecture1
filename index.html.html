@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مبادئ الإحصاء — الاختبار التفاعلي | Principles of Statistics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;600;700;800;900&family=Inter:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================================================
+           1. الهوية البصرية المشرقة والنظيفة (Clean Academic Palette)
+           ========================================================================== */
+        :root {
+            --bg-page: linear-gradient(145deg, #f4f7fb 0%, #e8effa 100%);
+            --card-bg: #ffffff;
+            --surface-soft: #f8fafc;
+            --surface-blue: #eff6ff;
+            --border-light: #e2e8f0;
+            --border-blue: #bfdbfe;
+
+            --royal-blue: #1e3a8a;
+            --indigo-vibrant: #2563eb;
+            --indigo-hover: #1d4ed8;
+            --indigo-glow: rgba(37, 99, 235, 0.2);
+
+            --amber-gold: #d97706;
+            --amber-bright: #f59e0b;
+            --amber-bg: #fffbeb;
+            --amber-border: #fde68a;
+
+            --emerald: #059669;
+            --emerald-bg: #ecfdf5;
+            --emerald-border: #10b981;
+
+            --rose: #e11d48;
+            --rose-bg: #fff1f2;
+            --rose-border: #f43f5e;
+
+            --text-main: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+
+            --radius-xl: 24px;
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            --shadow-card: 0 18px 40px -12px rgba(30, 58, 138, 0.12), 0 6px 16px -4px rgba(15, 23, 42, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        .en {
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg-page);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            overflow-x: hidden;
+        }
+
+        #confetti-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        /* ==========================================================================
+           2. البطاقة الرئيسية والترويسة الأكاديمية الواضحة
+           ========================================================================== */
+        .app-shell {
+            width: 100%;
+            max-width: 760px;
+            background: var(--card-bg);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-card);
+            border: 1px solid #ffffff;
+            overflow: hidden;
+            position: relative;
+            z-index: 10;
+            animation: cardPop 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .academic-banner {
+            background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+            color: #ffffff;
+            padding: 20px 24px;
+            text-align: center;
+            border-bottom: 4px solid var(--amber-bright);
+            position: relative;
+        }
+
+        .sound-toggle {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            background: rgba(255, 255, 255, 0.14);
+            color: #ffffff;
+            font-size: 1.05rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .sound-toggle:hover {
+            background: rgba(255, 255, 255, 0.26);
+            transform: scale(1.06);
+        }
+
+        .uni-chain {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.13);
+            border: 1px solid rgba(253, 230, 138, 0.45);
+            color: #fef3c7;
+            padding: 5px 14px;
+            border-radius: 50px;
+            font-size: 0.84rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .main-course-title {
+            font-size: 1.55rem;
+            font-weight: 900;
+            letter-spacing: -0.2px;
+            margin-bottom: 2px;
+        }
+
+        .sub-course-en {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #dbeafe;
+            margin-bottom: 10px;
+        }
+
+        .instructor-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(15, 23, 42, 0.35);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* ==========================================================================
+           3. الشاشات (البداية، الاختبار، النتيجة)
+           ========================================================================== */
+        .screen {
+            padding: 28px 24px;
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: slideUp 0.35s ease-out;
+        }
+
+        /* شاشة البداية النظيفة */
+        .structure-pills {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .s-pill {
+            background: var(--surface-blue);
+            border: 1px solid var(--border-blue);
+            color: var(--royal-blue);
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .s-pill.gold {
+            background: var(--amber-bg);
+            border-color: var(--amber-border);
+            color: #92400e;
+        }
+
+        .form-card {
+            max-width: 480px;
+            margin: 0 auto;
+            background: var(--surface-soft);
+            border: 1px solid var(--border-light);
+            border-radius: 20px;
+            padding: 22px;
+        }
+
+        .field-group {
+            margin-bottom: 18px;
+            text-align: right;
+        }
+
+        .field-group label {
+            display: block;
+            font-size: 0.94rem;
+            font-weight: 800;
+            color: var(--royal-blue);
+            margin-bottom: 8px;
+        }
+
+        .field-group input[type="text"] {
+            width: 100%;
+            padding: 13px 16px;
+            border-radius: var(--radius-md);
+            border: 2px solid #cbd5e1;
+            background: #ffffff;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .field-group input[type="text"]:focus {
+            border-color: var(--indigo-vibrant);
+            box-shadow: 0 0 0 4px var(--indigo-glow);
+        }
+
+        /* أزرار اختيار الشعبة التفاعلية */
+        .section-pills-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .sec-btn {
+            padding: 11px 6px;
+            border-radius: var(--radius-md);
+            border: 2px solid #cbd5e1;
+            background: #ffffff;
+            color: var(--text-body);
+            font-size: 0.95rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .sec-btn:hover {
+            border-color: var(--indigo-vibrant);
+            background: var(--surface-blue);
+        }
+
+        .sec-btn.selected {
+            background: var(--indigo-vibrant);
+            border-color: var(--indigo-vibrant);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
+        }
+
+        .error-text {
+            color: var(--rose);
+            font-size: 0.85rem;
+            font-weight: 800;
+            margin-top: 8px;
+            display: none;
+        }
+
+        /* الأزرار الرئيسية */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 26px;
+            border-radius: 14px;
+            border: none;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.22s ease;
+        }
+
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, #2563eb 0%, #1e3a8a 100%);
+            color: #ffffff;
+            box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.42);
+            font-size: 1.1rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px -4px rgba(37, 99, 235, 0.5);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #ffffff;
+            box-shadow: 0 6px 16px -3px rgba(217, 119, 6, 0.35);
+        }
+
+        .btn-gold:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: #ffffff;
+            color: var(--royal-blue);
+            border: 2px solid #cbd5e1;
+        }
+
+        .btn-outline:hover {
+            background: var(--surface-soft);
+            border-color: var(--royal-blue);
+        }
+
+        /* ==========================================================================
+           4. شاشة الاختبار التفاعلية (HUD + العداد الدائري + الأسئلة)
+           ========================================================================== */
+        .quiz-top-hud {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background: var(--surface-soft);
+            border: 1px solid var(--border-light);
+            padding: 10px 14px;
+            border-radius: 16px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .student-tag {
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: var(--royal-blue);
+            background: #ffffff;
+            padding: 6px 12px;
+            border-radius: 50px;
+            border: 1px solid var(--border-light);
+        }
+
+        .hud-stats {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+
+        .hud-pill {
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .hud-pill strong {
+            color: var(--indigo-vibrant);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .streak-pill {
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 0.86rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            transition: all 0.25s;
+        }
+
+        .streak-pill.hot {
+            background: var(--amber-bg);
+            border-color: var(--amber-bright);
+            color: #b45309;
+            transform: scale(1.05);
+        }
+
+        .float-score {
+            position: absolute;
+            top: -26px;
+            left: 10px;
+            background: var(--emerald);
+            color: #ffffff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 800;
+            padding: 2px 9px;
+            border-radius: 50px;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .float-score.pop {
+            animation: floatPop 1s ease-out forwards;
+        }
+
+        /* العداد الدائري SVG */
+        .svg-timer {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .svg-timer svg {
+            width: 50px;
+            height: 50px;
+            transform: rotate(-90deg);
+        }
+
+        .ring-track {
+            fill: #ffffff;
+            stroke: #e2e8f0;
+            stroke-width: 4.5;
+        }
+
+        .ring-fill {
+            fill: none;
+            stroke: var(--indigo-vibrant);
+            stroke-width: 4.5;
+            stroke-linecap: round;
+            stroke-dasharray: 125.6; /* 2 * PI * 20 */
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 0.9s linear, stroke 0.3s;
+        }
+
+        .ring-fill.warn { stroke: var(--amber-bright); }
+        .ring-fill.danger { stroke: var(--rose); }
+
+        .timer-num {
+            position: absolute;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: var(--royal-blue);
+        }
+
+        .timer-num.danger {
+            color: var(--rose);
+            animation: pulse 0.7s infinite;
+        }
+
+        /* شريط التقدم الـ 15 */
+        .progress-track {
+            display: grid;
+            grid-template-columns: repeat(15, 1fr);
+            gap: 5px;
+            margin-bottom: 16px;
+        }
+
+        .p-seg {
+            height: 7px;
+            border-radius: 50px;
+            background: #e2e8f0;
+            transition: all 0.25s ease;
+        }
+
+        .p-seg.active {
+            background: var(--indigo-vibrant);
+            box-shadow: 0 0 0 3px var(--indigo-glow);
+        }
+
+        .p-seg.ok { background: var(--emerald); }
+        .p-seg.bad { background: var(--rose); }
+
+        /* شريط القسم الحالي */
+        .section-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .part-badge {
+            background: var(--surface-blue);
+            color: var(--royal-blue);
+            border: 1px solid var(--border-blue);
+            padding: 5px 14px;
+            border-radius: 8px;
+            font-size: 0.84rem;
+            font-weight: 800;
+        }
+
+        .part-badge.tf-mode {
+            background: var(--amber-bg);
+            color: #92400e;
+            border-color: var(--amber-border);
+        }
+
+        .q-counter-label {
+            font-size: 0.88rem;
+            font-weight: 800;
+            color: var(--text-muted);
+        }
+
+        /* بطاقة السؤال (الإنكليزي + الترجمة العربية) */
+        .question-box {
+            background: #ffffff;
+            border: 2px solid var(--border-light);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .q-en-text {
+            direction: ltr;
+            text-align: left;
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.55;
+            margin-bottom: 12px;
+        }
+
+        .q-ar-text {
+            direction: rtl;
+            text-align: right;
+            background: var(--surface-soft);
+            border-right: 4px solid var(--indigo-vibrant);
+            border-radius: 10px;
+            padding: 10px 14px;
+            font-size: 0.96rem;
+            font-weight: 700;
+            color: var(--text-body);
+            line-height: 1.6;
+        }
+
+        /* خيارات الإجابة باللغة الإنكليزية فقط */
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .options-grid.tf-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .choice-btn {
+            width: 100%;
+            direction: ltr;
+            text-align: left;
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+            background: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 14px;
+            padding: 13px 16px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.18s ease;
+        }
+
+        .choice-btn:hover:not(:disabled) {
+            border-color: var(--indigo-vibrant);
+            background: var(--surface-blue);
+            transform: translateX(4px);
+        }
+
+        .choice-key {
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            border-radius: 8px;
+            background: #f1f5f9;
+            color: var(--royal-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.92rem;
+            transition: all 0.18s;
+        }
+
+        .choice-btn:hover:not(:disabled) .choice-key {
+            background: var(--indigo-vibrant);
+            color: #ffffff;
+        }
+
+        /* أزرار صح أو خطأ الكبيرة */
+        .choice-btn.tf-btn {
+            justify-content: center;
+            padding: 20px 16px;
+            font-size: 1.25rem;
+            font-weight: 800;
+            border-width: 2.5px;
+        }
+
+        .choice-btn.tf-true:hover:not(:disabled) {
+            border-color: var(--emerald);
+            background: var(--emerald-bg);
+            color: var(--emerald);
+            transform: translateY(-2px);
+        }
+
+        .choice-btn.tf-false:hover:not(:disabled) {
+            border-color: var(--rose);
+            background: var(--rose-bg);
+            color: var(--rose);
+            transform: translateY(-2px);
+        }
+
+        .choice-btn.correct {
+            background: var(--emerald-bg);
+            border-color: var(--emerald);
+            color: #065f46;
+        }
+
+        .choice-btn.correct .choice-key {
+            background: var(--emerald);
+            color: #ffffff;
+        }
+
+        .choice-btn.wrong {
+            background: var(--rose-bg);
+            border-color: var(--rose);
+            color: #9f1239;
+        }
+
+        .choice-btn.wrong .choice-key {
+            background: var(--rose);
+            color: #ffffff;
+        }
+
+        .choice-btn:disabled {
+            cursor: default;
+        }
+
+        /* التغذية الراجعة المختصرة بسطر واحد */
+        .feedback-strip {
+            display: none;
+            padding: 13px 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            border-right: 4px solid;
+            animation: slideUp 0.25s ease;
+        }
+
+        .feedback-strip.ok {
+            background: var(--emerald-bg);
+            border-color: var(--emerald);
+            color: #065f46;
+        }
+
+        .feedback-strip.bad {
+            background: var(--rose-bg);
+            border-color: var(--rose);
+            color: #9f1239;
+        }
+
+        .next-row {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        /* ==========================================================================
+           5. شاشة النتيجة النهائية (Clean Scorecard)
+           ========================================================================== */
+        .scorecard-box {
+            text-align: center;
+            background: linear-gradient(180deg, #f8fafc 0%, #eff6ff 100%);
+            border: 1px solid var(--border-blue);
+            border-radius: 20px;
+            padding: 26px 20px;
+            margin-bottom: 20px;
+        }
+
+        .sc-meta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            padding: 7px 16px;
+            border-radius: 50px;
+            font-size: 0.92rem;
+            font-weight: 800;
+            color: var(--royal-blue);
+            margin-bottom: 16px;
+        }
+
+        .sc-teacher {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 14px auto;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 6px solid var(--indigo-vibrant);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.16);
+        }
+
+        .score-circle .big-pct {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--royal-blue);
+            line-height: 1.1;
+        }
+
+        .score-circle .sub-lbl {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .grade-tag {
+            display: inline-block;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #ffffff;
+            padding: 7px 22px;
+            border-radius: 50px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
+        }
+
+        .sc-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 460px;
+            margin: 0 auto 20px auto;
+        }
+
+        .sc-stat {
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 12px 8px;
+        }
+
+        .sc-stat .v {
+            display: block;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--royal-blue);
+        }
+
+        .sc-stat .l {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .sc-actions {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .copy-msg {
+            display: none;
+            margin-top: 12px;
+            background: var(--emerald-bg);
+            color: #065f46;
+            border: 1px solid var(--emerald-border);
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 800;
+        }
+
+        /* مراجعة سريعة للإجابات */
+        .review-accordion {
+            border: 1px solid var(--border-light);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .review-toggle-bar {
+            width: 100%;
+            background: var(--surface-soft);
+            border: none;
+            padding: 13px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.96rem;
+            font-weight: 800;
+            color: var(--royal-blue);
+            cursor: pointer;
+        }
+
+        .review-list {
+            display: none;
+            padding: 14px;
+            max-height: 360px;
+            overflow-y: auto;
+            flex-direction: column;
+            gap: 10px;
+            border-top: 1px solid var(--border-light);
+        }
+
+        .rev-row {
+            padding: 11px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border-light);
+            border-right-width: 4px;
+            font-size: 0.88rem;
+        }
+
+        .rev-row.ok { border-right-color: var(--emerald); background: #f0fdf4; }
+        .rev-row.bad { border-right-color: var(--rose); background: #fff1f2; }
+
+        .rev-q {
+            direction: ltr;
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .rev-a {
+            direction: ltr;
+            text-align: left;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 0.84rem;
+        }
+
+        @keyframes cardPop {
+            from { opacity: 0; transform: translateY(16px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes floatPop {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-24px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @media (max-width: 600px) {
+            .main-course-title { font-size: 1.3rem; }
+            .screen { padding: 20px 16px; }
+            .options-grid.tf-grid { grid-template-columns: 1fr; }
+            .sc-stats-grid { grid-template-columns: 1fr; }
+            .sc-actions .btn { width: 100%; }
+            .q-en-text { font-size: 1.04rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <div class="app-shell">
+        <!-- الترويسة الأكاديمية الواضحة والمختصرة -->
+        <header class="academic-banner">
+            <button id="sound-btn" class="sound-toggle" title="الصوت" aria-label="Toggle Sound">🔊</button>
+            <div class="uni-chain">جامعة البصرة للنفط والغاز • كلية الإدارة الصناعية للنفط والغاز • قسم محاسبة النفط</div>
+            <h1 class="main-course-title">مبادئ الإحصاء | <span class="en">Principles of Statistics</span></h1>
+            <div class="sub-course-en">Interactive Student Assessment • الاختبار التفاعلي</div>
+            <div class="instructor-badge">👨‍🏫 أستاذ المادة: م.م إسماعيل محمد الهلالي</div>
+        </header>
+
+        <!-- ======================================================================
+             1. الصفحة الرئيسية (واضحة وخالية من السرد)
+             ====================================================================== -->
+        <section id="start-screen" class="screen active">
+            <div class="structure-pills">
+                <span class="s-pill">📝 10 اختيار من متعدد</span>
+                <span class="s-pill gold">✔️ 5 صح أو خطأ</span>
+                <span class="s-pill">⏱️ 30 ثانية للسؤال</span>
+            </div>
+
+            <div class="form-card">
+                <div class="field-group">
+                    <label for="student-name">اسم الطالب الثلاثي:</label>
+                    <input type="text" id="student-name" placeholder="اكتب اسمك الثلاثي هنا..." autocomplete="off">
+                </div>
+
+                <div class="field-group">
+                    <label>اختر الشعبة:</label>
+                    <div class="section-pills-grid" id="section-grid">
+                        <button type="button" class="sec-btn" data-sec="شعبة أ (A)">شعبة أ</button>
+                        <button type="button" class="sec-btn" data-sec="شعبة ب (B)">شعبة ب</button>
+
+                    </div>
+                    <div id="form-error" class="error-text">⚠️ يرجى إدخال اسم الطالب الثلاثي واختيار الشعبة أولاً.</div>
+                </div>
+
+                <button id="start-btn" class="btn btn-primary">ابدأ الاختبار 🚀</button>
+            </div>
+        </section>
+
+        <!-- ======================================================================
+             2. شاشة الأسئلة التفاعلية
+             ====================================================================== -->
+        <section id="quiz-screen" class="screen">
+            <div class="quiz-top-hud">
+                <div id="hud-student-info" class="student-tag">الطالب: ...</div>
+
+                <div class="hud-stats">
+                    <div class="hud-pill">النقاط: <strong id="hud-score">0</strong></div>
+                    <div id="hud-streak" class="streak-pill">🔥 0</div>
+                    <div id="float-score" class="float-score">+100</div>
+                </div>
+
+                <div class="svg-timer">
+                    <svg viewBox="0 0 50 50">
+                        <circle class="ring-track" cx="25" cy="25" r="20"></circle>
+                        <circle id="ring-fill" class="ring-fill" cx="25" cy="25" r="20"></circle>
+                    </svg>
+                    <span id="timer-num" class="timer-num">30</span>
+                </div>
+            </div>
+
+            <div id="progress-track" class="progress-track"></div>
+
+            <div class="section-bar">
+                <span id="part-badge" class="part-badge en">Part 1: Multiple Choice (1–10)</span>
+                <span id="q-counter" class="q-counter-label">السؤال 1 من 15</span>
+            </div>
+
+            <div class="question-box">
+                <div id="q-en" class="q-en-text">Question in English...</div>
+                <div id="q-ar" class="q-ar-text">ترجمة السؤال بالعربي...</div>
+            </div>
+
+            <div id="options-grid" class="options-grid"></div>
+
+            <div id="feedback-strip" class="feedback-strip"></div>
+
+            <div class="next-row">
+                <button id="next-btn" class="btn btn-primary" style="width: auto; display: none;">السؤال التالي ⬅</button>
+            </div>
+        </section>
+
+        <!-- ======================================================================
+             3. شاشة النتيجة النهائية (Clean Scorecard)
+             ====================================================================== -->
+        <section id="result-screen" class="screen">
+            <div class="scorecard-box">
+                <div id="sc-student-meta" class="sc-meta">👤 الطالب: ... • الشعبة: ...</div>
+                <div class="sc-teacher">أستاذ المادة: م.م إسماعيل محمد الهلالي</div>
+
+                <div class="score-circle">
+                    <span id="sc-pct" class="big-pct">0%</span>
+                    <span class="sub-lbl">النسبة المئوية</span>
+                </div>
+
+                <div>
+                    <span id="sc-grade" class="grade-tag">التقدير: امتياز 🏆</span>
+                </div>
+
+                <div class="sc-stats-grid">
+                    <div class="sc-stat">
+                        <span id="sc-score-out" class="v">0 / 15</span>
+                        <span class="l">الدرجة النهائية</span>
+                    </div>
+                    <div class="sc-stat">
+                        <span id="sc-points" class="v">0</span>
+                        <span class="l">مجموع النقاط</span>
+                    </div>
+                    <div class="sc-stat">
+                        <span id="sc-streak" class="v">0</span>
+                        <span class="l">أعلى سلسلة 🔥</span>
+                    </div>
+                </div>
+
+                <div class="sc-actions">
+                    <button id="copy-btn" class="btn btn-gold">نسخ النتيجة للمشاركة 📋</button>
+                    <button id="restart-btn" class="btn btn-outline">إعادة الاختبار 🔄</button>
+                </div>
+
+                <div id="copy-msg" class="copy-msg">✅ تم نسخ النتيجة بنجاح! يمكنك لصقها وإرسالها الآن.</div>
+            </div>
+
+            <div class="review-accordion">
+                <button id="toggle-review" class="review-toggle-bar" type="button">
+                    <span>📋 عرض مراجعة الإجابات (15 سؤالاً)</span>
+                    <span id="rev-arrow">◀</span>
+                </button>
+                <div id="review-list" class="review-list"></div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        /* ==========================================================================
+           1. المؤثرات الصوتية اللطيفة (Web Audio API)
+           ========================================================================== */
+        class SoundFX {
+            constructor() {
+                this.ctx = null;
+                this.muted = false;
+            }
+            init() {
+                if (!this.ctx) {
+                    const AC = window.AudioContext || window.webkitAudioContext;
+                    if (AC) this.ctx = new AC();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+            }
+            beep(freq, type = 'sine', dur = 0.14, delay = 0, vol = 0.1) {
+                if (this.muted) return;
+                this.init();
+                if (!this.ctx) return;
+                const t = this.ctx.currentTime + delay;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, t);
+                gain.gain.setValueAtTime(0.001, t);
+                gain.gain.exponentialRampToValueAtTime(vol, t + 0.015);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(t);
+                osc.stop(t + dur + 0.02);
+            }
+            correct() {
+                this.beep(523.25, 'sine', 0.12, 0, 0.11);
+                this.beep(659.25, 'sine', 0.16, 0.08, 0.12);
+            }
+            wrong() {
+                this.beep(311.13, 'sine', 0.16, 0, 0.09);
+                this.beep(261.63, 'sine', 0.2, 0.1, 0.09);
+            }
+            finish() {
+                [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => this.beep(f, 'triangle', 0.2, i * 0.1, 0.11));
+            }
+        }
+        const sfx = new SoundFX();
+
+        /* ==========================================================================
+           2. بنك الأسئلة المباشر من المصدر (10 اختيار من متعدد + 5 صح أو خطأ)
+              - الأسئلة بالإنكليزية + ترجمتها بالعربية
+              - الإجابات باللغة الإنكليزية فقط
+           ========================================================================== */
+        const questions = [
+            // --- Part 1: 10 Multiple Choice Questions ---
+            {
+                part: 1,
+                type: "mcq",
+                en: 'The term "Statistics" is derived from the Latin word "Status", which means:',
+                ar: 'مصطلح الإحصاء مشتق من الكلمة اللاتينية "Status" والتي تعني:',
+                options: ["State", "Population", "Number", "Science"],
+                correct: 0,
+                note: '✅ Correct: State — "Status" means "state" because early statistics managed state affairs.'
+            },
+            {
+                part: 1,
+                type: "mcq",
+                en: "Which branch of science deals with collecting, organizing, summarizing, presenting, and analyzing data to make sound decisions?",
+                ar: "ما هو الفرع العلمي الذي يتعامل مع جمع وتنظيم وتلخيص وعرض وتحليل البيانات للوصول إلى قرارات سليمة؟",
+                options: ["Statistics", "Accounting", "Economics", "Algebra"],
+                correct: 0,
+                note: "✅ Correct: Statistics — This is the standard scientific definition of Statistics."
+            },
+            {
+                part: 1,
+                type: "mcq",
+                en: "Which part of statistics is concerned with collecting, summarizing, displaying, and classifying data?",
+                ar: "أي قسم من أقسام الإحصاء يهتم بجمع البيانات وتلخيصها وعرضها وتصنيفها؟",
+                options: ["Descriptive statistics", "Inferential statistics", "Applied mathematics", "Probability theory"],
+                correct: 0,
+                note: "✅ Correct: Descriptive statistics — Concerned with collecting, summarizing, displaying, and classifying data."
+            },
+            {
+                part: 1,
+                type: "mcq",
+                en: "Which part of statistics deals with analyzing data to reach useful results and sound decisions?",
+                ar: "أي قسم من أقسام الإحصاء يتعامل مع تحليل البيانات بهدف الوصول إلى نتائج مفيدة وقرارات سليمة؟",
+                options: ["Deductive (inferential) statistics", "Descriptive statistics", "Historical statistics", "Classification"],
+                correct: 0,
+                note: "✅ Correct: Deductive (inferential) statistics — Deals with analyzing data to reach sound decisions."
+            },
+            {
+                part: 1,
+                type: "mcq",
+                en: "Using statistics in sciences such as economics and sociology helps to:",
+                ar: "يؤدي استخدام علم الإحصاء في العلوم الأخرى مثل الاقتصاد وعلم الاجتماع إلى:",
+                options: [
+                    "Save effort, reduce work, and shorten time",
+                    "Increase manual work only",
+                    "Replace all other sciences",
+                    "Eliminate data collection"
+                ],
+                correct: 0,
+                note: "✅ Correct: Save effort, reduce work, and shorten time."
+            },
+            {
+                part: 1,
+                type: "mcq",
+                en: "Data obtained directly from original sources through personal interviews or questionnaires are called:",
+                ar: "البيانات التي يتم الحصول عليها مباشرة من مصادرها الأصلية عبر المقابلة الشخصية أو الاستبيان تُسمى:",
+                options: ["Field sources", "Historical sources", "Secondary booklets", "Published periodicals"],
+                correct: 0,
+                note: "✅ Correct: Field sources — Preliminary unpublished data collected from original sources."
+            },
+            {
+                part: 1,
+                type: "mcq",
+                en: "An institution with 30 employees is an example of a:",
+                ar: "مؤسسة تضم 30 موظفاً تُعد مثالاً على:",
+                options: ["Limited community (population)", "Infinite community", "Random sample", "Qualitative variable"],
+                correct: 0,
+                note: "✅ Correct: Limited community (population) — Consists of a limited number of individuals or units."
+            },
+            {
+                part: 1,
+                type: "mcq",
+                en: "Blood group, eye color, and marital status are examples of:",
+                ar: "فصيلة الدم، لون العينين، والحالة الاجتماعية هي أمثلة على:",
+                options: ["Qualitative (descriptive) data", "Digital (quantitative) data", "Continuous variables", "Discrete numbers"],
+                correct: 0,
+                note: "✅ Correct: Qualitative (descriptive) data — Non-numerical data representing descriptions."
+            },
+            {
+                part: 1,
+                type: "mcq",
+                en: "Recording every single member of the entire community without exception (such as a general population census) is called:",
+                ar: "تسجيل جميع مفردات المجتمع بالكامل دون استثناء (مثل التعداد العام للسكان) يُسمى:",
+                options: ["Comprehensive restriction method", "The sampling method", "Field interview", "Historical source"],
+                correct: 0,
+                note: "✅ Correct: Comprehensive restriction method — Records all units of the community without exception."
+            },
+            {
+                part: 1,
+                type: "mcq",
+                en: "Which variable takes limited countable values, such as the number of individuals in a family?",
+                ar: "أي متغير يأخذ قيماً محددة قابلة للعدّ مثل عدد أفراد الأسرة؟",
+                options: ["Discrete (disconnected) variable", "Continuous (connected) variable", "Qualitative variable", "Descriptive attribute"],
+                correct: 0,
+                note: "✅ Correct: Discrete (disconnected) variable — Takes limited countable values."
+            },
+
+            // --- Part 2: 5 True or False Questions ---
+            {
+                part: 2,
+                type: "tf",
+                en: "Field sources are better than historical sources because the researcher directly faces the topic of research.",
+                ar: "تُعد المصادر الميدانية أفضل من المصادر التاريخية لأن الباحث يواجه موضوع بحثه بشكل مباشر.",
+                options: ["TRUE", "FALSE"],
+                correct: 0,
+                note: "✅ TRUE — Field sources allow the researcher to directly face the research topic."
+            },
+            {
+                part: 2,
+                type: "tf",
+                en: "A sample is the entire group of all individuals or units of interest to the researcher.",
+                ar: "العينة هي الإطار الشامل الذي يضم جميع أفراد المجتمع محل اهتمام الباحث.",
+                options: ["TRUE", "FALSE"],
+                correct: 1,
+                note: "❌ FALSE — That defines the Population; a Sample is a selected part of the population."
+            },
+            {
+                part: 2,
+                type: "tf",
+                en: "The sampling method is preferred over comprehensive registration because it saves time, effort, and cost.",
+                ar: "يُفضّل أسلوب أخذ العينة على أسلوب التسجيل الشامل لأنه يوفر الوقت والجهد والتكلفة.",
+                options: ["TRUE", "FALSE"],
+                correct: 0,
+                note: "✅ TRUE — Sampling saves time, effort, and cost compared to comprehensive registration."
+            },
+            {
+                part: 2,
+                type: "tf",
+                en: "Temperature and car speedometer readings are examples of continuous (connected) variables.",
+                ar: "درجة الحرارة وقراءة عداد سرعة السيارة هي أمثلة على المتغير المتصل (المستمر).",
+                options: ["TRUE", "FALSE"],
+                correct: 0,
+                note: "✅ TRUE — Continuous (connected) variables take values over a continuous range/period."
+            },
+            {
+                part: 2,
+                type: "tf",
+                en: "A qualitative variable is an attribute that can be easily measured in numbers, such as the number of students.",
+                ar: "المتغير النوعي هو صفة يمكن قياسها بالأرقام بسهولة مثل عدد الطلاب.",
+                options: ["TRUE", "FALSE"],
+                correct: 1,
+                note: "❌ FALSE — A qualitative variable cannot be measured numerically (e.g., skin color)."
+            }
+        ];
+
+        /* ==========================================================================
+           3. منطق التطبيق وإدارة الحالة
+           ========================================================================== */
+        let studentName = "";
+        let studentSection = "";
+        let currentIdx = 0;
+        let correctCount = 0;
+        let points = 0;
+        let streak = 0;
+        let maxStreak = 0;
+        let timer = null;
+        let timeLeft = 30;
+        let locked = false;
+        let log = [];
+
+        const RING_LEN = 125.6; // 2 * PI * 20
+
+        // العناصر
+        const startScreen = document.getElementById("start-screen");
+        const quizScreen = document.getElementById("quiz-screen");
+        const resultScreen = document.getElementById("result-screen");
+
+        const soundBtn = document.getElementById("sound-btn");
+        const nameInput = document.getElementById("student-name");
+        const secBtns = document.querySelectorAll(".sec-btn");
+        const formError = document.getElementById("form-error");
+        const startBtn = document.getElementById("start-btn");
+
+        const hudStudentInfo = document.getElementById("hud-student-info");
+        const hudScore = document.getElementById("hud-score");
+        const hudStreak = document.getElementById("hud-streak");
+        const floatScore = document.getElementById("float-score");
+        const ringFill = document.getElementById("ring-fill");
+        const timerNum = document.getElementById("timer-num");
+
+        const progressTrack = document.getElementById("progress-track");
+        const partBadge = document.getElementById("part-badge");
+        const qCounter = document.getElementById("q-counter");
+        const qEn = document.getElementById("q-en");
+        const qAr = document.getElementById("q-ar");
+        const optionsGrid = document.getElementById("options-grid");
+        const feedbackStrip = document.getElementById("feedback-strip");
+        const nextBtn = document.getElementById("next-btn");
+
+        const copyBtn = document.getElementById("copy-btn");
+        const restartBtn = document.getElementById("restart-btn");
+        const copyMsg = document.getElementById("copy-msg");
+        const toggleReview = document.getElementById("toggle-review");
+        const reviewList = document.getElementById("review-list");
+        const revArrow = document.getElementById("rev-arrow");
+
+        // اختيار الشعبة
+        secBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                secBtns.forEach(b => b.classList.remove("selected"));
+                btn.classList.add("selected");
+                studentSection = btn.dataset.sec;
+            });
+        });
+
+        // كتم / تفعيل الصوت
+        soundBtn.addEventListener("click", () => {
+            sfx.muted = !sfx.muted;
+            soundBtn.textContent = sfx.muted ? "🔇" : "🔊";
+        });
+
+        startBtn.addEventListener("click", beginQuiz);
+        nameInput.addEventListener("keypress", e => { if (e.key === "Enter") beginQuiz(); });
+        nextBtn.addEventListener("click", goNext);
+        copyBtn.addEventListener("click", copyResult);
+        restartBtn.addEventListener("click", () => {
+            stopConfetti();
+            switchScreen(startScreen);
+        });
+
+        toggleReview.addEventListener("click", () => {
+            const open = reviewList.style.display === "flex";
+            reviewList.style.display = open ? "none" : "flex";
+            revArrow.textContent = open ? "◀" : "▼";
+        });
+
+        function switchScreen(el) {
+            [startScreen, quizScreen, resultScreen].forEach(s => s.classList.remove("active"));
+            el.classList.add("active");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
+        function beginQuiz() {
+            studentName = nameInput.value.trim();
+            if (!studentName || !studentSection) {
+                formError.style.display = "block";
+                if (!studentName) nameInput.focus();
+                return;
+            }
+            formError.style.display = "none";
+
+            currentIdx = 0;
+            correctCount = 0;
+            points = 0;
+            streak = 0;
+            maxStreak = 0;
+            log = [];
+
+            hudStudentInfo.textContent = `👤 ${studentName} • ${studentSection}`;
+            hudScore.textContent = "0";
+            updateStreak();
+            buildProgress();
+
+            sfx.init();
+            switchScreen(quizScreen);
+            loadQuestion();
+        }
+
+        function buildProgress() {
+            progressTrack.innerHTML = "";
+            for (let i = 0; i < questions.length; i++) {
+                const seg = document.createElement("div");
+                seg.className = "p-seg";
+                seg.id = `seg-${i}`;
+                progressTrack.appendChild(seg);
+            }
+        }
+
+        // خلط ترتيب الخيارات عشوائياً في أسئلة الاختيار من متعدد لكي لا تكون الإجابة الصحيحة دائماً في نفس الموقع
+        function shuffleOptions(q) {
+            if (q.type === "tf") {
+                return { opts: q.options, correctIdx: q.correct };
+            }
+            const indexed = q.options.map((text, idx) => ({ text, isCorrect: idx === q.correct }));
+            for (let i = indexed.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [indexed[i], indexed[j]] = [indexed[j], indexed[i]];
+            }
+            return {
+                opts: indexed.map(item => item.text),
+                correctIdx: indexed.findIndex(item => item.isCorrect)
+            };
+        }
+
+        let currentCorrectIndex = 0;
+        let currentDisplayedOptions = [];
+
+        function loadQuestion() {
+            locked = false;
+            clearInterval(timer);
+            timeLeft = 30;
+            updateRing();
+
+            const q = questions[currentIdx];
+            const total = questions.length;
+
+            // تحديث شريط التقدم
+            for (let i = 0; i < total; i++) {
+                const s = document.getElementById(`seg-${i}`);
+                if (s) s.classList.toggle("active", i === currentIdx);
+            }
+
+            // تحديث شارة القسم
+            if (q.part === 1) {
+                partBadge.className = "part-badge en";
+                partBadge.textContent = "Part 1: Multiple Choice (1–10)";
+            } else {
+                partBadge.className = "part-badge tf-mode en";
+                partBadge.textContent = "Part 2: True or False (11–15)";
+            }
+            qCounter.textContent = `السؤال ${currentIdx + 1} من ${total}`;
+
+            // عرض السؤال بالإنكليزية وترجمته بالعربية
+            qEn.textContent = `Q${currentIdx + 1}. ${q.en}`;
+            qAr.textContent = q.ar;
+
+            feedbackStrip.style.display = "none";
+            feedbackStrip.className = "feedback-strip";
+            nextBtn.style.display = "none";
+
+            const shuffled = shuffleOptions(q);
+            currentDisplayedOptions = shuffled.opts;
+            currentCorrectIndex = shuffled.correctIdx;
+
+            optionsGrid.innerHTML = "";
+            if (q.type === "tf") {
+                optionsGrid.className = "options-grid tf-grid";
+                currentDisplayedOptions.forEach((opt, idx) => {
+                    const btn = document.createElement("button");
+                    const isTrue = idx === 0;
+                    btn.className = `choice-btn tf-btn ${isTrue ? "tf-true" : "tf-false"}`;
+                    btn.textContent = isTrue ? "TRUE ✔" : "FALSE ✘";
+                    btn.addEventListener("click", () => handleSelect(idx, false));
+                    optionsGrid.appendChild(btn);
+                });
+            } else {
+                optionsGrid.className = "options-grid";
+                const letters = ["A", "B", "C", "D"];
+                currentDisplayedOptions.forEach((opt, idx) => {
+                    const btn = document.createElement("button");
+                    btn.className = "choice-btn";
+                    btn.innerHTML = `<span class="choice-key">${letters[idx]}</span><span>${opt}</span>`;
+                    btn.addEventListener("click", () => handleSelect(idx, false));
+                    optionsGrid.appendChild(btn);
+                });
+            }
+
+            timer = setInterval(() => {
+                timeLeft--;
+                updateRing();
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    handleSelect(-1, true);
+                }
+            }, 1000);
+        }
+
+        function updateRing() {
+            timerNum.textContent = timeLeft;
+            const offset = RING_LEN * (1 - Math.max(0, timeLeft) / 30);
+            ringFill.style.strokeDashoffset = offset;
+
+            ringFill.classList.remove("warn", "danger");
+            timerNum.classList.remove("danger");
+            if (timeLeft <= 6) {
+                ringFill.classList.add("danger");
+                timerNum.classList.add("danger");
+            } else if (timeLeft <= 12) {
+                ringFill.classList.add("warn");
+            }
+        }
+
+        function updateStreak() {
+            hudStreak.textContent = `🔥 ${streak}`;
+            hudStreak.classList.toggle("hot", streak >= 3);
+        }
+
+        function popPoints(val) {
+            floatScore.textContent = `+${val}`;
+            floatScore.classList.remove("pop");
+            void floatScore.offsetWidth;
+            floatScore.classList.add("pop");
+        }
+
+        function handleSelect(chosenIdx, timeout) {
+            if (locked) return;
+            locked = true;
+            clearInterval(timer);
+
+            const q = questions[currentIdx];
+            const isOk = !timeout && (chosenIdx === currentCorrectIndex);
+            const seg = document.getElementById(`seg-${currentIdx}`);
+            const btns = optionsGrid.querySelectorAll(".choice-btn");
+
+            btns.forEach((b, i) => {
+                b.disabled = true;
+                if (i === currentCorrectIndex) b.classList.add("correct");
+                else if (i === chosenIdx && !isOk) b.classList.add("wrong");
+            });
+
+            if (isOk) {
+                correctCount++;
+                streak++;
+                if (streak > maxStreak) maxStreak = streak;
+                const gain = streak >= 3 ? 120 : 100;
+                points += gain;
+                hudScore.textContent = points;
+                updateStreak();
+                popPoints(gain);
+                sfx.correct();
+                if (seg) seg.classList.add("ok");
+
+                feedbackStrip.classList.add("ok");
+                feedbackStrip.textContent = q.note;
+            } else {
+                streak = 0;
+                updateStreak();
+                sfx.wrong();
+                if (seg) seg.classList.add("bad");
+
+                feedbackStrip.classList.add("bad");
+                feedbackStrip.textContent = timeout
+                    ? `⏰ انتهى الوقت! (${q.note.replace(/^✅ |^❌ /, "")})`
+                    : q.note;
+            }
+
+            feedbackStrip.style.display = "block";
+
+            log.push({
+                en: q.en,
+                userAns: timeout ? "Time Expired" : currentDisplayedOptions[chosenIdx],
+                correctAns: currentDisplayedOptions[currentCorrectIndex],
+                isOk
+            });
+
+            nextBtn.textContent = currentIdx < questions.length - 1
+                ? "السؤال التالي ⬅"
+                : "عرض النتيجة النهائية 🏆";
+            nextBtn.style.display = "inline-flex";
+        }
+
+        function goNext() {
+            currentIdx++;
+            if (currentIdx < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        /* ==========================================================================
+           4. شاشة النتيجة النهائية ومشاركة الدرجة
+           ========================================================================== */
+        function getGrade(pct) {
+            if (pct >= 90) return "امتياز 🏆";
+            if (pct >= 80) return "جيد جداً 🥇";
+            if (pct >= 70) return "جيد 🥈";
+            if (pct >= 50) return "مقبول 🎖️";
+            return "يحتاج مراجعة 📘";
+        }
+
+        function showResults() {
+            switchScreen(resultScreen);
+            copyMsg.style.display = "none";
+
+            const total = questions.length;
+            const pct = Math.round((correctCount / total) * 100);
+            const grade = getGrade(pct);
+
+            document.getElementById("sc-student-meta").textContent = `👤 الطالب: ${studentName}  •  ${studentSection}`;
+            document.getElementById("sc-pct").textContent = `${pct}%`;
+            document.getElementById("sc-grade").textContent = `التقدير: ${grade}`;
+            document.getElementById("sc-score-out").textContent = `${correctCount} / ${total}`;
+            document.getElementById("sc-points").textContent = points;
+            document.getElementById("sc-streak").textContent = maxStreak;
+
+            if (pct >= 70) {
+                sfx.finish();
+                startConfetti();
+            }
+
+            // تعبئة قائمة المراجعة
+            reviewList.innerHTML = "";
+            reviewList.style.display = "none";
+            revArrow.textContent = "◀";
+
+            log.forEach((item, idx) => {
+                const div = document.createElement("div");
+                div.className = `rev-row ${item.isOk ? "ok" : "bad"}`;
+                div.innerHTML = `
+                    <div class="rev-q">Q${idx + 1}. ${item.en}</div>
+                    <div class="rev-a" style="color: ${item.isOk ? "#065f46" : "#9f1239"};">
+                        ${item.isOk ? "✅" : "❌"} Your Answer: ${item.userAns}
+                    </div>
+                    ${!item.isOk ? `<div class="rev-a" style="color: #065f46;">✔ Correct Answer: ${item.correctAns}</div>` : ""}
+                `;
+                reviewList.appendChild(div);
+            });
+        }
+
+        function copyResult() {
+            const total = questions.length;
+            const pct = Math.round((correctCount / total) * 100);
+            const grade = getGrade(pct);
+
+            const text =
+`🎓 نتيجة الاختبار التفاعلي — مبادئ الإحصاء
+🏛 جامعة البصرة للنفط والغاز | قسم محاسبة النفط
+👨‍🏫 أستاذ المادة: م.م إسماعيل محمد الهلالي
+👤 اسم الطالب: ${studentName}
+🏫 الشعبة: ${studentSection}
+📊 الدرجة: ${correctCount} من ${total} (${pct}%)
+⭐ التقدير: ${grade}`;
+
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand("copy");
+            document.body.removeChild(ta);
+
+            copyMsg.style.display = "block";
+            setTimeout(() => { copyMsg.style.display = "none"; }, 4000);
+        }
+
+        /* ==========================================================================
+           5. مؤثرات الاحتفال البسيطة (Confetti)
+           ========================================================================== */
+        const canvas = document.getElementById("confetti-canvas");
+        const ctx = canvas.getContext("2d");
+        let pieces = [];
+        let animId = null;
+
+        function startConfetti() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            pieces = [];
+            const colors = ["#2563eb", "#f59e0b", "#10b981", "#1e3a8a"];
+            for (let i = 0; i < 90; i++) {
+                pieces.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    w: Math.random() * 8 + 4,
+                    h: Math.random() * 5 + 3,
+                    color: colors[i % colors.length],
+                    vy: Math.random() * 3 + 2,
+                    vx: (Math.random() - 0.5) * 2
+                });
+            }
+            loopConfetti();
+        }
+
+        function loopConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            let alive = 0;
+            pieces.forEach(p => {
+                p.y += p.vy;
+                p.x += p.vx;
+                if (p.y < canvas.height + 15) alive++;
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, p.w, p.h);
+            });
+            if (alive > 0) animId = requestAnimationFrame(loopConfetti);
+            else stopConfetti();
+        }
+
+        function stopConfetti() {
+            if (animId) cancelAnimationFrame(animId);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    </script>
+</body>
+</html>
